@@ -1,28 +1,36 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <throttle @ongoing="handleOngoing" @change="handleChange">
+      <button>{{time ? time : '获取验证码'}}</button>
+    </throttle>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
+import throttle from './components/throttle'
+import { defineComponent, ref } from 'vue' 
+export default defineComponent({
   name: 'App',
   components: {
-    HelloWorld
+    throttle
+  },
+  setup () {
+    const timeRef = ref(0)
+    function handleChange (value) {
+      timeRef.value = value
+    }
+    function handleOngoing (value) {
+      console.log(`请骚等${value}秒`)
+    }
+    return {
+      time: timeRef,
+      handleOngoing,
+      handleChange
+    }
   }
-}
+})
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
