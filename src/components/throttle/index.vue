@@ -20,18 +20,21 @@ export default defineComponent({
     const timeRef = ref(0)
     // 定时器id
     let timer
+    let loading = false
     /** 
      * 开始
      * @param {Function} cd
     */
-    function start (cd) {
-      if (timeRef.value === 0) {
-        const b =  cd()
+    async function start (cd) {
+      if (timeRef.value === 0 && !loading) {
+        loading = true
+        const b = await cd()
         if (b) {
           timeRef.value = props.seconds
           content.emit('change', timeRef.value)
           startTime()
         }
+        loading = false
       } else {
         content.emit('ongoing', timeRef.value)
       }
