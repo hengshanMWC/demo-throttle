@@ -1,6 +1,6 @@
 <template>
-  <div @click="start">
-    <slot></slot>
+  <div>
+    <slot :time="timeRef"></slot>
   </div>
 </template>
 <script>
@@ -20,12 +20,18 @@ export default defineComponent({
     const timeRef = ref(0)
     // 定时器id
     let timer
-    // 开始
-    function start () {
+    /** 
+     * 开始
+     * @param {Function} cd
+    */
+    function start (cd) {
       if (timeRef.value === 0) {
-        timeRef.value = props.seconds
-        content.emit('change', timeRef.value)
-        startTime()
+        const b =  cd()
+        if (b) {
+          timeRef.value = props.seconds
+          content.emit('change', timeRef.value)
+          startTime()
+        }
       } else {
         content.emit('ongoing', timeRef.value)
       }
@@ -46,7 +52,8 @@ export default defineComponent({
       clearTimeout(timer)
     })
     return {
-      start
+      start,
+      timeRef
     }
   }
 })
