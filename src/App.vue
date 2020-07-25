@@ -37,6 +37,7 @@ export default defineComponent({
         console.warn('请输入正确的手机号码')
       }
     }
+    setTimeout
     // 假设这是个获取code的接口
     function getCode () {
       alert('发送成功')

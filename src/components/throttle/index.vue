@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, onUnmounted, watch } from 'vue'
+import { defineComponent, onUnmounted, watch, ref } from 'vue'
 import { useTime, useCache } from './use.js'
 export default defineComponent({
   name: 'throttle',
@@ -26,12 +26,16 @@ export default defineComponent({
   },
   // 数据出口
   setup (props, { emit }) {
+    const secondsRef = ref(props.seconds)
+    watch(() => props.seconds, function (value) {
+      secondsRef.value = value
+    })
     const {
       timeRef,
       timerRef,
       start,
       startTime
-    } = useTime(props.seconds, emit)
+    } = useTime(secondsRef, emit)
     const { 
       getCache,
       setCache,

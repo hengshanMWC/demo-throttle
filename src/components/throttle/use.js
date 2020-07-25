@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-export function useTime (seconds, emit) {
+export function useTime (secondsRef, emit) {
   const timeRef = ref(0)
   const timerRef = ref(0)
   let loading = false
@@ -12,7 +12,7 @@ export function useTime (seconds, emit) {
       loading = true
       const b = await cd()
       if (b) {
-        timeRef.value = seconds
+        timeRef.value = secondsRef.value
         emit('change', timeRef.value)
         startTime()
       }
