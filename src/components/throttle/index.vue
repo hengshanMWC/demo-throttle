@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, ref, onUnmounted } from 'vue'
+import { defineComponent, ref, onUnmounted, watch } from 'vue'
 export default defineComponent({
   name: 'throttle',
   props: {
@@ -12,6 +12,15 @@ export default defineComponent({
     seconds: {
       type: Number,
       default: 60
+    },
+    isCache: Boolean,
+    cacheObject: {
+      type: Object,
+      default: () => localStorage
+    },
+    cacheID: {
+      validator: () => true,
+      default: 0,
     }
   },
   // 数据出口
@@ -41,6 +50,7 @@ export default defineComponent({
     }
     // 倒计时
     function startTime () {
+      clearTimeout(timer)
       timer = setTimeout(() => {
         if (timeRef.value <= 0) {
           clearTimeout(timer)
@@ -50,6 +60,36 @@ export default defineComponent({
         }
       }, 1000)
     }
+    // 缓存模块
+    watch(() => timeRef.value, function (value) {
+      if (props.isCache) {
+        if (value <= 0) {
+          removeCache()
+        } else {
+          setCache(value)
+        }
+      }
+    })
+    const key = 'throttle' + props.cacheID
+    function getCache () {
+      const time = Number(props.cacheObject.getItem(key)) - Date.now()
+      return time > 0 ? time / 1000 : 0
+    }
+    function setCache (seconds) {
+      const time = seconds * 1000 + Date.now()
+      props.cacheObject.setItem(key, time.toString())
+    }
+    function removeCache () {
+      props.cacheObject.removeItem(key)
+    }
+    // 初始化
+    (function () {
+      if (props.isCache) {
+        timeRef.value = Math.round(getCache())
+        startTime()
+      }
+      removeCache()
+    })()
     // 销毁记得清除定时器
     onUnmounted(() => {
       clearTimeout(timer)

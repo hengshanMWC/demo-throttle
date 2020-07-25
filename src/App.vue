@@ -1,8 +1,11 @@
 <template>
   <div id="app">
     <input type="tel" placeholder="请输入手机号" v-model="phoneRef" maxlength="11">
-    <throttle ref="throttleRef" v-slot="slotProps" @ongoing="handleOngoing">
+    <throttle ref="throttleRef" v-slot="slotProps" @ongoing="handleOngoing" isCache>
       <button @click="handleVerify">{{slotProps.time ? slotProps.time : '获取验证码'}}</button>
+    </throttle>
+    <throttle ref="throttleRef2" v-slot="slotProps" isCache cacheID="1" :seconds="20">
+      <button @click="handleVerify2">{{slotProps.time ? '第二个' + slotProps.time : '第二个获取验证码'}}</button>
     </throttle>
   </div>
 </template>
@@ -18,8 +21,12 @@ export default defineComponent({
   setup () {
     const phoneRef = ref('') // 手机号码
     const throttleRef = ref(null) // 获取throttl的实例
+    const throttleRef2 = ref(null) // 获取throttl的实例
     function handleOngoing (value) {
       console.log(`请骚等${value}秒`)
+    }
+    function handleVerify2 () {
+      throttleRef2.value.start(() => true)
     }
     // 做验证
     function handleVerify () {
@@ -38,8 +45,10 @@ export default defineComponent({
     return {
       phoneRef,
       throttleRef,
+      throttleRef2,
       handleOngoing,
-      handleVerify
+      handleVerify,
+      handleVerify2
     }
   }
 })
